@@ -155,15 +155,10 @@ void on_encode_clicked(GtkWidget *widget, gpointer data) {
     GtkTextBuffer *buffer = gtk_text_view_get_buffer(output_view);
     gtk_text_buffer_set_text(buffer, result, -1);
 
-    // Copy to clipboard using xclip
-    gchar *command;
-    g_shell_parse_argv("xclip -selection clipboard", NULL, &command, NULL);
-    FILE *pipe = popen(command, "w");
-    if (pipe) {
-        fwrite(result, 1, strlen(result), pipe);
-        pclose(pipe);
-    }
-    g_strfreev(command);
+    // Copy to clipboard using GTK
+    GtkClipboard *clipboard = gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
+    gtk_clipboard_set_text(clipboard, result, -1);
+    gtk_clipboard_store(clipboard);
 
     free(result);
     g_free((gchar*)method);
